@@ -1,14 +1,21 @@
-simple_mod_node.modify_node:
-  path: '/modify_node/'
+simple_mod_node.simple_mod_node:
+  path: '/simple-mod-node'
   defaults:
-    _form: '\Drupal\simple_mod_node\Controller\ModifyNodeController::modifyNode'
-    _title: 'Simply Modify A Node'
+    _controller: '\Drupal\simple_mod_node\Controller\SimpleModNodeController::simpleModNode'
+    _title: 'Simple Modify Node'
   requirements:
-    _access: 'access content'
-simple_mod_node.simple_mod_config_form:
-  path: '/admin/simple_mod_node/form/simple_mod_config_form'
+    _permission: 'access content'
+simple_mod_node.hello:
+  path: '/hello'
+  defaults:
+    _controller: '\Drupal\simple_mod_node\Controller\HelloWorldController::helloWorld'
+    _title: 'Our first route'
+  requirements:
+    _permission: 'access content'
+simple_mod_node.simple_mod_node_form:
+  path: '/admin/simple_mod_node/form/simple-modify-node-configuration'
   defaults:
     _form: '\Drupal\simple_mod_node\Form\SimpleModConfigForm'
-    _title: 'Settings for mod node'
+    _title: 'Simple Modify Node Configuration'
   requirements:
-    _access: 'access content'
+    _permission: 'administer site configuration'

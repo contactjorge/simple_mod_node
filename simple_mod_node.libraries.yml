@@ -1,0 +1,5 @@
+simple_digest:
+  version: 1.x
+  css:
+    theme:
+      css/simple_mod_node.css

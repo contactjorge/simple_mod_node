@@ -7,7 +7,12 @@
  * Jorge L Lopez
  */
 
+
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_help().
@@ -15,16 +20,150 @@ use Drupal\Core\Routing\RouteMatchInterface;
  * @param RouteMatchInterface $routeMatch
  * @return mixed
  */
-
-function simple_mod_node_help($route_name, RouteMatchInterface $routeMatch)
-{
+function simple_mod_node_help($route_name, RouteMatchInterface $routeMatch) {
 	switch ($route_name) {
 		case 'help.page.simple_mod_node':
 			$output = '';
 			$output .= '<h3>' . t('About') . '</h3>';
 			$output .= '<p>' . t('This is a simple module to modify a SimpleNews node') . '</p>';
-			return output;
+			return $output;
 
-			defatul:
+			default:
+	}
+}
+
+/**
+ * Hook for the theming of this module. Form is not yet created so it's not being used.
+ * @param $existing
+ * @param $type
+ * @param $theme
+ * @param $path
+ * @return array
+ */
+function simple_mod_node($existing, $type, $theme, $path) {
+	return [
+		'html__simple_mod_node' => [
+			'render element' => 'html'
+		],
+		'page__simple_mod_node' => [
+			'render element' => 'page'
+		],
+		'node__simple_mod_node' => [
+			'render element' => 'node'
+		],
+	];
+}
+
+/**
+ * Stub that will count all comments to determine whether to send a daily digest for the day
+ */
+function countComments()
+{
+
+}
+
+/**
+ * Stub for regions that will determine when new digests are created.
+ */
+function setTimeZoneRegions()
+{
+
+}
+
+/**
+ * @throws EntityStorageException
+ */
+function createNewsletter() {
+	$languages = Drupal::languageManager()->getLanguages(); //May remove. Attempted to add languages and reuse creation for translation
+
+	/**
+	 * @var  $node
+	 * Create the original digest in primary language of English.
+	 */
+	$node = Node::create([
+		'type' => 'daily_digest_multilingual',
+		'simplenews_issue' => 'meridian180_english',
+		'title' => 'Daily Digest',
+		'langcode' => 'en',
+		'target_id' => 'simple_digest',
+		'display_id' => 'digest_body',
+		'field_digest_header' => 36,
+		'field_digest_footer'=> 41,
+	]);
+	$node->status = 0;
+	$node->enforceIsNew();
+	$node->save(); //save original
+	drupal_set_message( "Node with nid " . $node->id() . " saved!\n"); //log creation with a message
+
+	/**
+	 * Create/Add translations to original node in Japanese, Korean, Chinese.
+	 */
+	$node_ja = $node->addTranslation('ja'); //Create the Japanese Translation
+	$node_ko = $node->addTranslation('ko'); //Create the Korean Translation
+	$node_zh = $node->addTranslation('zh-hans'); //Create the Chinese Translation
+
+	//Populate the Japanese Translation fields
+	$node_ja->set('title', 'Digest Japanese');
+	$node_ja->set('field_digest_body', [
+			'target_id' => 'simple_digest',
+			'display_id' => 'digest_body',
+			'arguments' => 'ja/ja',
+		]);
+	$node_ja->set('simplenews_issue', 'meridian180_japanese');
+
+	//Populate the Korean Translation fields
+	$node_ko->set('title', 'Digest Korean');
+	$node_ko->set('field_digest_body', [
+			'target_id' => 'simple_digest',
+			'arguments' => 'ko/ko',
+			]);
+	$node_ko->set('simplenews_issue', 'meridian180_korean');
+
+	//Populate the Chinese Translation fields
+	$node_zh->set('title', 'Digest Chinese');
+	$node_zh->set('field_digest_body', [
+			'target_id' => 'simple_digest',
+			'display_id' => 'digest_body',
+			'arguments' => 'zh-hans/zh-hans',
+			]);
+	$node_zh->set('simplenews_issue', 'meridian180_chinese');
+
+	/**
+	 * Save translations of Japanese, Korean, Chinese
+	 */
+	$node_ja->save();
+	drupal_set_message( "Node with nid " . $node->id() . " saved in Japanese!\n"); //log saving of translation
+
+	$node_ko->save();
+	drupal_set_message( "Node with nid " . $node->id() . " saved in Korean!\n"); //log saving of translation
+
+	$node_zh->save();
+	drupal_set_message( "Node with nid " . $node->id() . " saved in Chinese (Simplified)!\n"); //log saving of translationg
+}
+
+
+/**
+ * Send the newsletter to cron job. Future of this will be moved to a _queue service that runs at specific times
+ * rather than every cron.
+ * Dev environment runs every 15 minutes. Production runs every 10 minutes to accommodate large queues which may time
+ * out and need to complete in the following cron job.
+ *
+ * @throws InvalidPluginDefinitionException
+ * @throws PluginNotFoundException
+ * @throws EntityStorageException
+ */
+function simple_mod_node_cron()
+{
+	$count = 0;
+
+	$newsletters = Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'daily_digest_multilingual']);
+
+	foreach ($newsletters as $n) {
+		$name = $n->getTitle();
+		$count++;
+	}
+
+	if ($count <= 20) {
+		createNewsletter();
 	}
 }
