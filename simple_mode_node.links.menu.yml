@@ -1,0 +1,6 @@
+simple_mod_node.set_config_form:
+  title: 'Set the criteria to edit for the node modifications.'
+  route_name: simple_mod_node.set_config_form
+  description: 'This is a tool that will allow you to search for all SimpleNews nodes, check for empty body, enqueue for sending, and email to users based on SimpleNews .'
+  parent: system.admin_config_system
+  weight: 91

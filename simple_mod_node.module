@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Contains simple_mod_node.module.
+ * Created 06-18-2019 for Northwestern Buffett and NUIT
+ * Jorge L Lopez
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ * @param $route_name
+ * @param RouteMatchInterface $routeMatch
+ * @return mixed
+ */
+
+function simple_mod_node_help($route_name, RouteMatchInterface $routeMatch)
+{
+	switch ($route_name) {
+		case 'help.page.simple_mod_node':
+			$output = '';
+			$output .= '<h3>' . t('About') . '</h3>';
+			$output .= '<p>' . t('This is a simple module to modify a SimpleNews node') . '</p>';
+			return output;
+
+			defatul:
+	}
+}

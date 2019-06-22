@@ -1,0 +1,5 @@
+name: 'Simple Mod Node'
+type: module
+description: A simple module to find all SimpleNews digest, flag them, and publish them for email.
+core: 8.x
+package: Custom

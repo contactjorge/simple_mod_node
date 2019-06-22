@@ -1,0 +1,14 @@
+simple_mod_node.modify_node:
+  path: '/modify_node/'
+  defaults:
+    _form: '\Drupal\simple_mod_node\Controller\ModifyNodeController::modifyNode'
+    _title: 'Simply Modify A Node'
+  requirements:
+    _access: 'access content'
+simple_mod_node.simple_mod_config_form:
+  path: '/admin/simple_mod_node/form/simple_mod_config_form'
+  defaults:
+    _form: '\Drupal\simple_mod_node\Form\SimpleModConfigForm'
+    _title: 'Settings for mod node'
+  requirements:
+    _access: 'access content'
