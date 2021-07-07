@@ -1,12 +1,20 @@
 # Ignore configuration files that may contain sensitive information.
 sites/*/*settings*.php
 sites/example.sites.php
+ .idea/codeStyles/Project.xml
+ .idea/codeStyles/codeStyleConfig.xml
+ .idea/dbnavigator.xml
+ .idea/misc.xml
+ .idea/modules.xml
+ .idea/simple_mod_node.iml
+ .idea/vcs.xml
 
 # Ignore paths that contain generated content.
 files/
 sites/*/files
 sites/*/private
 sites/*/translations
+.idea
 
 # Ignore default text files
 robots.txt
